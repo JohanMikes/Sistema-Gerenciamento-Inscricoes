@@ -1,8 +1,7 @@
 #include <iostream>
-
 using namespace std;
 
-
+// Structs Nolista(Users), Atividade(Atividades) e Descritor(Descritor) --------* 
 struct Nolista{
      string nome;
      int inscricao;
@@ -15,28 +14,27 @@ struct Atividade{
      string atv;
      string tipo_atv;
      string data;
-     int hora;
+     int hora; 
      Atividade *prox;
 };
-
 
 struct Descritor{
      Nolista *ini;
      Nolista *fim;
 };
 
+// --------------------------------------------------*
 
+// Criando descritor, lista das atividades em NULL, lista de candidatos e cadastro das atividades ----------*
 Descritor * criarlista(){
      Descritor *novo = new Descritor;
      novo -> ini = NULL;
      novo -> fim = NULL;
 }
 
-
-Atividade * criarlistaSimples(){
+Atividade * criarlistaSimples(){ // Atividades é uma lista simples
      return NULL;
 }
-
 
 void inserir_candidato(Descritor *l, string nome, int inscricao, string email){
      Nolista *novo = new Nolista;
@@ -75,8 +73,9 @@ void cadastro_atv(Atividade *&l, string atv, string tipo_atv, string data, int h
           novo = l;
      }     
 }
+// --------------------------------------------------*
 
-
+// TEMPORARIO IMPRIMIR LISTA DE USUARIOS!!! APAGAR APOS TESTES DE DEBUG ---------*
 void imprimir(Descritor *l){
      Nolista *p = l -> ini;
     do
@@ -87,7 +86,7 @@ void imprimir(Descritor *l){
     } while (p -> prox != NULL);
 
 }
-
+// --------------------------------------------------*
 
 int main(){
      Descritor *lista_candidado = criarlista();
@@ -111,7 +110,5 @@ int main(){
      }
 
      imprimir(lista_candidado);
-
-
      
 }
