@@ -15,7 +15,7 @@ struct Atividade{
      string atv;
      string tipo_atv;
      string data;
-     int hora;
+     string hora;
      Atividade *prox;
 };
 
@@ -39,6 +39,7 @@ Atividade * criarlistaSimples(){
 
 
 void inserir_candidato(Descritor *l, string nome, int inscricao, string email){
+     
      Nolista *novo = new Nolista;
      novo -> nome = nome;
      novo -> inscricao = inscricao;
@@ -57,7 +58,7 @@ void inserir_candidato(Descritor *l, string nome, int inscricao, string email){
      }
 }
 
-void cadastro_atv(Atividade *&l, string atv, string tipo_atv, string data, int hora){
+void cadastro_atv(Atividade *&l, string atv, string tipo_atv, string data, string hora){
      Atividade *lista_atv = criarlistaSimples();
      Atividade *novo = new Atividade;
     
@@ -77,6 +78,19 @@ void cadastro_atv(Atividade *&l, string atv, string tipo_atv, string data, int h
 }
 
 
+void imprimirSimples(Atividade *l){
+     Atividade *q = l;
+     while (q -> prox != NULL){
+          cout<<"Entrei"<<endl;
+          cout<< q -> atv<<" - ";
+          cout<< q -> tipo_atv <<" - ";
+          cout<< q -> data <<" - ";
+          cout<< q -> hora <<endl;
+          q = q -> prox;
+     }
+     
+}
+
 void imprimir(Descritor *l){
      Nolista *p = l -> ini;
     do
@@ -88,30 +102,40 @@ void imprimir(Descritor *l){
 
 }
 
-
 int main(){
      Descritor *lista_candidado = criarlista();
+     Atividade *lista_atividade = criarlistaSimples();
+     
+     //
      string nome, email;
      int inscricao;
+
+     //Variavéis da lista de atividade 
+     string atv, tipo_atv, data, hora;
+
      cout<<"Digite o nome do canditado: "<<endl;
-     cin>>nome;
-     while(nome != "fim"){
-          
-          cout<<"Digite o numero de inscricao"<<endl;
-          cin>>inscricao;
+     cin>>atv;
+     while(atv != "fim"){
+          if (atv != "fim"){
+               cout<<"Digite o tipo da atividade: "<<endl;
+               cin >> tipo_atv;
 
-          cout<<"Digite o seu e-mail"<<endl;
-          cin >> email;
+               cout<<"Digite a data: "<<endl;
+               cin >> data;
 
-          inserir_candidato(lista_candidado, nome, inscricao, email);
+               cout<<"Digite a hora: "<<endl;
+               cin >> hora;
 
-          cout<<"Digite o nome do canditado: "<<endl;
-          cin>>nome;
+               
+          }
 
+          cadastro_atv(lista_atividade, atv, tipo_atv, data, hora);
+          cout<<"Digite a atividade: "<<endl;
+          cin >> atv;
      }
 
-     imprimir(lista_candidado);
 
+     imprimirSimples(lista_atividade);
 
      
 }
