@@ -30,6 +30,8 @@ Descritor * criarlista(){
      Descritor *novo = new Descritor;
      novo -> ini = NULL;
      novo -> fim = NULL;
+     return novo;
+
 }
 
 
@@ -59,37 +61,36 @@ void inserir_candidato(Descritor *l, string nome, int inscricao, string email){
 }
 
 void cadastro_atv(Atividade *&l, string atv, string tipo_atv, string data, string hora){
-     Atividade *lista_atv = criarlistaSimples();
      Atividade *novo = new Atividade;
-    
      novo -> atv = atv;
      novo -> tipo_atv = tipo_atv;
      novo -> data = data;
      novo -> hora = hora;
      novo -> prox = NULL;
-
-     if(l -> prox == NULL){
+     if(l == NULL){
           l = novo;
      }
      else{
           novo -> prox = l;
-          novo = l;
+          l = novo;
      }     
 }
 
 
 void imprimirSimples(Atividade *l){
-     Atividade *q = l;
-     while (q -> prox != NULL){
-          cout<<"Entrei"<<endl;
-          cout<< q -> atv<<" - ";
-          cout<< q -> tipo_atv <<" - ";
-          cout<< q -> data <<" - ";
-          cout<< q -> hora <<endl;
-          q = q -> prox;
-     }
-     
+     Atividade *p = l -> prox;
+    do{   
+          cout<<p -> atv<<" - ";
+          cout<<p -> tipo_atv<<" - ";
+          cout<<p -> data<< " - ";
+          cout<<p -> hora<<endl;
+          p = p -> prox;
+    } while (p != NULL);
+
 }
+
+     
+
 
 void imprimir(Descritor *l){
      Nolista *p = l -> ini;
