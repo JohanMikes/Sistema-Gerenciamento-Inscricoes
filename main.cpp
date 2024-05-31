@@ -1,60 +1,51 @@
-// Importando library iostream e defininfo namespace
-
 #include <iostream>
-
 using namespace std;
-
-// Definindo as structs Nolista(Candidatos), Atividade(Atividades)
-
+// Definindo as structs Nolista(Candidatos), Atividade(Atividades) e Matrix
 struct Nolista{
      string nome;
      int inscricao;
      string email;
+     string curso;
      Nolista *prox;
      Nolista *ant;
+     int freq; // Adicionado para organizar a frequencia dos candidatos ao sorteio
 };
 
 struct Atividade{
      string atv;
      string tipo_atv;
      string data;
-     string hora;
+     int hora;
      Atividade *prox;
 };
-
-// Descritor(Descritor)
 
 struct Descritor{
      Nolista *ini;
      Nolista *fim;
 };
 
-// Função de inicializar uma lista duplamente
+bool** Matrix_Atividades; // Definindo ponteiro de boleanas junto as structs para melhor organização
 
-Descritor * criarlista(){
+// Funções de inicialização das duas listas
+Descritor * criarlistaDupla(){
      Descritor *novo = new Descritor;
      novo -> ini = NULL;
      novo -> fim = NULL;
      return novo;
-
 }
-
-
-//Função de inicialização de lista simples 
 Atividade * criarlistaSimples(){
      return NULL;
 }
-
 //Função para preencher a lista de candidatos
-
-void inserir_candidato(Descritor *l, string nome, int inscricao, string email){
-     
+void inserir_candidato(Descritor *&l, string nome, int inscricao, string email, string curso){
      Nolista *novo = new Nolista;
      novo -> nome = nome;
      novo -> inscricao = inscricao;
      novo -> email = email;
+     novo -> curso = curso;
      novo -> prox = NULL;
      novo -> ant = NULL;
+     // int freq não sera definido nesta função, sendo lixo até sua função ser chamada
 
      if(l -> ini == NULL){
           l -> ini = novo;
@@ -67,101 +58,150 @@ void inserir_candidato(Descritor *l, string nome, int inscricao, string email){
      }
 }
 
-//Função para preencher a lista de atividade
-void cadastro_atv(Atividade *&l, string atv, string tipo_atv, string data, string hora){
-     Atividade *novo = new Atividade;
-     novo -> atv = atv;
-     cout<<novo -> atv<<endl;
-     novo -> tipo_atv = tipo_atv;
-     novo -> data = data;
-     novo -> hora = hora;
-     novo -> prox = NULL;
-     if(l == NULL){
-          l = novo;
-     }
-     else{
-          novo -> prox = l;
-          l = novo;
-     }     
-}
-
-//Função para imprimir a lista de atividade
-void imprimirSimples(Atividade *q){
-     Atividade *p = q;
-    do{   
-          cout<<p -> atv<<" - ";
-          cout<<p -> tipo_atv<<" - ";
-          cout<<p -> data<< " - ";
-          cout<<p -> hora<<endl;
-          p = p -> prox;
-
-    } while (p != NULL);
-
-}
-
-//Função para imprimir a lista de candidatos
-void imprimir(Descritor *l){
+void imprimirCandidatos(Descritor *l){
      Nolista *p = l -> ini;
-     while (p -> prox != NULL){
+     while (p != NULL){
           cout << p->nome << " - ";
-          cout << p->inscricao << " - ";
-          cout << p->email << endl;
-
+          cout << p->email << " - ";
+          cout << p->inscricao<< " - ";
+          cout << p->curso<< endl;
           p = p -> prox;
      }
-     //ERRO: NÃO ESTÁ IMPRINDO A ULTIMA POSIÇÃO 
+
+}
+
+// Função para prencher a lista de atividade e ler sua leitura
+
+Atividade* gerarlista_atv(Atividade *&l, string atv, string tipo_atv, int hora, string data){
+  Atividade *atv_bloco = new Atividade;
+  atv_bloco -> atv = atv;
+  atv_bloco -> tipo_atv = tipo_atv;
+  atv_bloco -> data = data;
+  atv_bloco -> hora = hora;
+  atv_bloco -> prox = NULL;
+  if (l == NULL){
+    l = atv_bloco;
+  }else{
+    atv_bloco -> prox = l;
+    l = atv_bloco;
+  }
+  return atv_bloco;
+}
+
+void imprimir_atv(Atividade* l){
+  Atividade* aux = l;
+  while (aux -> prox != NULL){
+    cout << "Atividade: " << aux -> atv << endl;
+    cout << "Tipo " << aux -> tipo_atv << endl;
+    cout << "Data: " << aux -> data << endl;
+    cout << "Hora: " << aux -> hora << endl << endl;
+    aux = aux -> prox;
+  }
+    cout << "Atividade: " << aux -> atv << endl;
+    cout << "Tipo " << aux -> tipo_atv << endl;
+    cout << "Data: " << aux -> data << endl;
+    cout << "Hora: " << aux -> hora << endl << endl;
+}
+
+// Função da Matrix -----------------
+
+bool** trabalho_matrix(int contador_A, int contador_C, Atividade* l, Descritor* lista_candidado){
+  bool** Matrix_Atividades = new bool*[contador_A];
+  for (int i = 0; i < contador_A; i++){
+    Matrix_Atividades[i] = new bool[contador_C];
+  }
+  // Inicializando Matriz em FALSE
+  for (int i = 0; i < contador_A; i++){
+    for (int j = 0; j < contador_C; j++){
+      Matrix_Atividades[i][j] = false;
+    }
+  }
+  // Fazendo comparação
+  Nolista* aux = lista_candidado -> ini;
+  Atividade* aux2 = l;
+  for (int i = 0; i < contador_A; i++){
+    for (int j = 0; j < contador_C; j++){
+      if (aux -> curso == l -> atv){
+        Matrix_Atividades[i][j] = true;
+        aux2 = aux2 -> prox;
+      }else{
+        Matrix_Atividades[i][j] = false;
+      }
+    }
+    aux = aux -> prox;
+  }
+  return Matrix_Atividades;
+}
+
+// Função para trabalhar na frequencia, agindo direto no ponteiro l com uso de (&)
+void inserir_freq(Descritor *&l, int contador_C){
+  int freq = 0;
+  Nolista* aux = l -> ini; // Iniciando ponteiro para escrever
+  for (int i = 0; i < contador_C; i++){
+    cout << "Por favor insira a frequencia de cada dandidato em ordem (entre 0 e 100): ";
+    cin >> freq;
+    if (freq < 0 || freq > 100){
+      cout << endl << "DIGITO INVALIDO!" << endl;
+      i -= 1;
+    }else{
+      aux -> freq = freq;
+      aux = aux -> prox;
+    }
+  }
+  aux = l -> ini; // Resetando ponteiro para leitura
+  for (int j = 0; j < contador_C; j++){
+    cout << endl << "Freq: " << aux -> freq << "*" << endl;
+    aux = aux -> prox;
+  }
 }
 
 int main(){
-     //Criando as listas
-     Descritor *lista_candidado = criarlista();
-     Atividade *lista_atividade = criarlistaSimples();
-     
-     //Variáveis da lista de candidados 
-     string nome, email;
-     int inscricao;
-
-     //Variavéis da lista de atividade 
-     string atv, tipo_atv, data, hora;
-
-     cout<<"Digite o nome do candidato: "<<endl;
+     //Criando lista candidatos e ponteiro atividade
+     Descritor *lista_candidado = criarlistaDupla(); // Descritor
+     Atividade *l = criarlistaSimples(); // Ponteiro L simples
+     //Variáveis da lista de candidados, atividades e main
+     string nome, email, curso, atv, tipo_atv, data;
+     int inscricao, hora, contador_C = 0, contador_A = 0;
+     // INSERIR ATIVIDADES -----------//
+     cout << "Digite o nome da atividade (Fim para sair): " << endl;
+     cin >> atv;
+     while (atv != "Fim"){
+       cout << "Digite o tipo da atividade: " << endl;
+       cin >> tipo_atv;
+       cout << "Digite a data: " << endl;
+       cin >> data;
+       cout << "Digite a hora em formato 24h sem minutos: " << endl;
+       cin >> hora;
+       contador_A++;
+       gerarlista_atv(l, atv, tipo_atv, hora, data);
+       cout << "Digite o nome da atividade (Fim para sair): " << endl;
+       cin >> atv;
+     }
+     //INSERIR CANDIDATO ---------- //
+     cout<<"Digite o nome do candidato (Fim para sair): "<<endl;
      cin>>nome;
-
-     while (nome != "fim"){
+     while (nome != "Fim"){
           cout<<"Digite o email do usuario: "<<endl;
           cin>>email;
-
           cout<<"Digite o numero da inscrição: "<<endl;
           cin>>inscricao;
-
-          inserir_candidato(lista_candidado, nome, inscricao, email);
-
-          cout<<"Digite o nome do candidato: "<<endl;
+          imprimir_atv(l);
+          cout<<"Digite a atividade desejada (Sem erros de escrita): "<<endl;
+          cin >> curso;
+          contador_C++;
+          inserir_candidato(lista_candidado, nome, inscricao, email, curso);
+          cout<<"Digite o nome do candidato  (Fim para sair): "<<endl;
           cin>>nome;
      }
-     
-     cout<<"Digite o nome da atividade: "<<endl;
-     cin>>atv;
+     imprimirCandidatos(lista_candidado);
+     // CRIANDO MATRIX DE BOOL -----------//
+     cout << endl << "Gerando Matrix..." << endl;
+     trabalho_matrix(contador_A, contador_C, l, lista_candidado);
+     // TRABALHANDO FREQUENCIA
+     cout << endl << "Iniciando frequencia..." << endl; // Escrita trabalhada direno na função
+     inserir_freq(lista_candidado, contador_C);
 
-     while(atv != "fim"){
-          cout<<"Digite o tipo da atividade: "<<endl;
-          cin >> tipo_atv;
-
-          cout<<"Digite a data: "<<endl;
-          cin >> data;
-
-          cout<<"Digite a hora: "<<endl;
-          cin >> hora;
-
-          cadastro_atv(lista_atividade, atv, tipo_atv, data, hora);
-          
-          cout<<"Digite a atividade: "<<endl;
-          cin >> atv;
-     }
-
-
-     imprimir(lista_candidado);
-     imprimirSimples(lista_atividade);
-
-     
+     // A FAZER!!!! CRIAR OS ITEMS DO SORTEIO E REALIZAR O SORTEIO USANDO COMO CRITERIO O VALOR DA FREQUENCIA SER 
+     // MAIOR QUE 75% (75 INT)
+     // :D boa sorte!!!!
 }
